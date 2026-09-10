@@ -6,7 +6,7 @@ O **SalesPulse BI** é uma solução corporativa end-to-end de Analytics Enginee
 
 O objetivo deste repositório é demonstrar a construção de uma plataforma analítica completa: desde a ingestão de dados brutos e validação automatizada de qualidade (Data Quality), passando por modelagem dimensional em **PostgreSQL** (Star Schema), até a entrega de **Views SQL** otimizadas e **Dashboards Executivos no Power BI**.
 
-🛠️ Tech Stack & Ferramentas
+## 🛠️ Tech Stack & Ferramentas
 
 - **Linguagem & Processamento:**  Python 3.12+, Pandas, SQLAlchemy
 - **Testes & Qualidade:** Pytest

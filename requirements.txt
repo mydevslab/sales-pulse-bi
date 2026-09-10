@@ -1,7 +1,8 @@
 pandas>=2.0.0
 numpy>=1.24.0
 SQLAlchemy>=2.0.0
-pyscopg2-binary>=2.9.6
+psycopg2-binary>=2.9.9
+psycopg[binary]>=3.1.0
 python-dotenv>=1.0.0
 pytest>=7.3.0
 openpyxl>=3.1.0
