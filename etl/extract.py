@@ -1,9 +1,9 @@
 import os
 import logging
-import pandas as import pd
+import pandas as pd
 from etl.config import RAW_DATA_PATH
 
-logger = logging.getLogger(name)
+logger = logging.getLogger(__name__)
 
 
 def extract_raw_data() -> dict[str, pd.DataFrame]:

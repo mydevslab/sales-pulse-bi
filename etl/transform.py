@@ -1,13 +1,13 @@
 import logging
 import pandas as pd
 
-logger = logging.getLogger(name)
+logger = logging.getLogger(__name__)
 
 
-def transform(
+def transform_dimensions(
     df_cust: pd.DataFrame,
-df_prod: pd.DataFrame,
-df_sales: pd.DataFrame
+    df_prod: pd.DataFrame,
+    df_sales: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     Aplica regras de tratamento de nulos e padronização nas tabelas dimensionais.
@@ -49,7 +49,7 @@ def merge_fact_sales(
 
     fact_df = pd.merge(
         df_items,
-        df_orders[['order_id', 'customer_id', 'sales_rep_id', 'channel', 'order_date', 'status']],
+        df_orders[['order_id', 'customer_id', 'salesperson_id', 'channel', 'order_date', 'status']],
         on='order_id',
         how='inner'
     )

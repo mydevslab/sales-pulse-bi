@@ -2,7 +2,7 @@ import logging
 import pandas as pd
 from sqlalchemy import create_engine
 
-logger = logging.getLogger(name)
+logger = logging.getLogger(__name__)
 
 
 class PostgresLoader:
