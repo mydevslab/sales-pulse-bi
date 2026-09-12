@@ -1,0 +1,171 @@
+// =============================================================================
+// SALES PULSE BI - DAX MEASURES LIBRARY & CALENDAR TABLE
+// Target Engine: Power BI / Tabular Engine (SSAS)
+// =============================================================================
+
+// 1. Date Table Generation (DAX Calculeted Table)
+dim_date = 
+ADDCOLUMNS(
+    CALENDAR(DATE(2024, 1, 1), DATE(2025,12,31)),
+    "Year", YEAR([Date]),
+    "MonthNumber", MONTH([Date]),
+    "MonthName", FORMAT([Date], "mmm"),
+    "MonthYear", FORMAT([Date]), "mmm-yyyy",
+    "MonthYearSort", YEAR(Date)*100 + MONTH(Date),
+    "Quarter", "Q" & FORMAT([Date]) , "q",
+    "DayOfWeek", FORMAT([Date]), "dddd",
+    "IsWeekend", IF(WEEKDAY([Date], 2) >= 6, 1, 0)
+)
+
+// 2. Core Financial & Operatinal Metrics
+
+// Faturamento Bruto ($)
+Total Gross Revenue = 
+CALCULATE(
+    SUM(fact_sales[discount_amount]),
+    fact_sales[status] IN ("Entregue", "Faturado")
+)
+
+// Faturamento Líquido ($)
+Total Net Revenue = 
+CALCULATE(
+    SUM(fact_sales[net_revenue]),
+    fact_sales[status] IN ("Entregue", "Faturado")
+)
+
+// Custo Total ($)
+Total Cost = 
+CALCULATE(
+    SUM(fact_sales[total_cost]),
+    fact_sales[status] IN ["Entregue", "Faturado"]
+)
+
+// Margem Bruto ($)
+Gross Margin = 
+DIVIDE(
+    [Gross Margin],
+    [Total Net Revenue],
+    0
+)
+
+// Desconto Médio (%)
+Average Discount Pct =
+DIVDE(
+    [Total Discounts],
+    [Total Gross Revenue],
+    0
+)
+
+// Total de Pedidos Faturados
+Total Orders =
+CALCULATE(
+    DISTINCTCOUNT(fact_sales[order_id]),
+    fact_sales[status] IN ("Entregue", "Faturado")
+)
+
+// Ticket Médio ($)
+Average Ticket = 
+DIVIDE(
+    [Total Net Revenue],
+    [Total Orders],
+    0
+)
+
+// Clientes Ativos (com pelo menos 1 compra no período)
+Active Customers = 
+CALCULATE(
+    DISTINCTCOUNT(fact_sales[customer_id]),
+    fact_sales[status] IN ("Entregue", "Faturado")
+)
+
+// Total de Items Vendidos
+Total Units Sold =
+CALCULATE(
+    SUM(fact_sales[quantity]),
+    fact_sales[status] IN ("Entregue", "Faturado")
+)
+
+// 3. Target Archievement & Variance Analysis
+
+// Meta de Receita Líquida ($)
+Total Target Revenue = SUM(fact_sales[target_revenue])
+
+// Percentual de Atingimento da Meta (%)
+Target Archievement Pct = 
+DIVIDE(
+    [Total Net Revenue],
+    [Total Target Revenue],
+    0
+)
+
+// Desvio Absoluto de Meta ($)
+Target Variance Amount = [Total Net Revenue] - [Total Target Revenue]
+
+// Status do Antingimento
+Target Status Label = 
+IF(
+    ISBLACK([Total Target Revenue]),
+    "Sem Meta",
+    IF(Target Archievement Pct >= 1.0, "Meta Atingida", "Abaixo da Meta")
+)
+
+// 4. Time Intelligence Metrics (MoM & YoY)
+
+// Receita do Mês Anterior (MoM - Prior Month)
+PM Net Revenue = 
+CALCULATE(
+    [Total Net Revenue],
+    DATEDD(dim_date[Date], -1, MONTH)
+)
+
+// Variação de Receita MoM ($)
+MoM Growth Amount = [Total Net Revvenue] - [PM Net Revenue]
+
+// Variação de Receita MoM (%)
+MoM Growth Pct = 
+DIVIDE(
+    [MoM Growth Amount],
+    [PM Net Revenue],
+    0
+)
+
+// Receita do Ano Anterior (YoY - Same Period Last Year)
+PY Net Revenue = 
+CALCULATE(
+    [Total Net Revenue],
+    SAMEPERIODLASTYEAR(dim_date[Date])
+)
+
+// Variação de Receita YoY ($)
+Yoy Growth Amount = [Total Net Revenue] - [PY Net Revenue]
+
+// Variação de Receita YoY (%)
+YoY Growth Pct = 
+DIVIDE(
+    [YoY Growth Amount],
+    [PY Net Revenue],
+    0
+)
+
+// Margem Bruta do Ano Anterior ($)
+PY Gross Margin = 
+CALCULATE(
+    [Gross Margin],
+    SAMEPERIODLASTYEAR(dim_date[Date])
+)
+
+// 5. Data Quality Audit Metrics
+
+// Total de Registros Auditados no ETL
+DQ Total Processed Records = SUM(stg_data_quality_report[total_records])
+
+// Total de Registros Rejeitos
+DQ Total Reject Records = SUM(stg_data_quality_report[rejected_records])
+
+// Quality Score Global (%)
+DQ Global Score Pct = 
+DIVIDE(
+    SUM(stg_data_quality_report[valid_records]),
+    SUM(stg_data_quality_report[total_records]),
+    0
+)
