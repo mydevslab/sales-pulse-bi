@@ -19,7 +19,7 @@ def extract_raw_data() -> dict[str, pd.DataFrame]:
         "products": "products.csv",
         "salespeople": "salespeople.csv",
         "orders": "orders.csv",
-        "orders_items": "orders_items.csv",
+        "order_items": "order_items.csv",
         "targets": "targets.csv",
     }
 
@@ -35,7 +35,7 @@ def extract_raw_data() -> dict[str, pd.DataFrame]:
         raw_dfs[key] = df
         logger.info("Extratído '%s': %d registros encontrados.", key, len(df))
 
-    logger.info("Extração concluída com sucesso (d% tabelas carregadas em memória).", len(raw_dfs))
+    logger.info("Extração concluída com sucesso (%d tabelas carregadas em memória).", len(raw_dfs))
     
     return raw_dfs
 
